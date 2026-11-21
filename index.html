@@ -12,8 +12,6 @@ body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-ap
 a{color:var(--link)}
 button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-
-/* Home */
 .home{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 80px}
 .brand{font-size:clamp(2.8rem,12vw,4.6rem);font-weight:700;letter-spacing:-2px;margin:0 0 24px}
 .brand span:nth-child(1){color:#4285f4}.brand span:nth-child(2){color:#ea4335}.brand span:nth-child(3){color:#fbbc05}
@@ -36,29 +34,29 @@ button,input,select{font:inherit;color:inherit}
 .chip:hover{background:var(--hover)}
 .langrow{margin-top:22px;color:var(--muted);font-size:.9rem}
 select{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
-
-/* Results */
 .top{display:flex;align-items:center;gap:16px;padding:14px 20px 0;flex-wrap:wrap}
 .top .brand{font-size:1.7rem;margin:0;letter-spacing:-1px;cursor:pointer}
 .top .box{flex:1;min-width:240px;max-width:640px}
 .tabs{display:flex;gap:4px;padding:0 20px;border-bottom:1px solid var(--line);margin-top:10px;overflow-x:auto}
 .tabs button{border:0;background:none;padding:10px 14px;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
 .tabs button[aria-selected=true]{color:var(--accent);border-bottom-color:var(--accent)}
-.main{max-width:700px;padding:16px 20px 60px;margin-left:0}
+.main{max-width:700px;padding:16px 20px 60px}
 @media (min-width:900px){.main{margin-left:150px}}
 .stat{color:var(--muted);font-size:.85rem;margin-bottom:14px}
-.res{margin:0 0 26px}
+.res{margin:0 0 26px;display:flex;gap:12px}
+.res .cover{width:56px;height:80px;object-fit:cover;border-radius:4px;background:var(--hover);flex:none}
 .res .url{color:var(--muted);font-size:.85rem;word-break:break-all}
+.src{display:inline-block;margin-right:8px;padding:0 8px;border:1px solid var(--line);border-radius:99px;font-size:.75rem;color:var(--text)}
 .res h3{margin:2px 0 4px;font-size:1.2rem;font-weight:400}
 .res h3 a{text-decoration:none}.res h3 a:hover{text-decoration:underline}
 .res p{margin:0;color:var(--muted)}
+.sec{font-weight:600;margin:22px 0 12px}
 mark{background:none;color:var(--text);font-weight:700}
 .other{margin:26px 0;padding:14px 16px;border:1px solid var(--line);border-radius:12px}
 .other a{margin-right:14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-.grid a{display:block;background:var(--hover);border-radius:8px;overflow:hidden;aspect-ratio:1;position:relative}
+.grid a{display:block;background:var(--hover);border-radius:8px;overflow:hidden;aspect-ratio:1}
 .grid img{width:100%;height:100%;object-fit:cover;display:block}
-.pager{display:flex;gap:10px;margin-top:10px}
 .msg{color:var(--muted);padding:30px 0}
 </style>
 </head>
@@ -66,7 +64,7 @@ mark{background:none;color:var(--text);font-weight:700}
 <div id="app"></div>
 
 <script>
-/* ============ SETTINGS (edit if you like) ============ */
+/* ============ 1. SETTINGS ============ */
 const NAME = "Searchly";
 const LANGS = { en: "English", hi: "हिन्दी" };
 const ENGINES = {
@@ -75,54 +73,122 @@ const ENGINES = {
   DuckDuckGo: q => "https://duckduckgo.com/?q=" + q
 };
 
-/* ============ HELPERS ============ */
+/* ============ 2. YOUR OWN WEBSITE DATA ============
+   Add your pages, stories, products, anything. These show FIRST in results.
+   url can be a full link (https://...) or a path like "/about.html". */
+const SITE_DATA = [
+  { title: "The Last Train – Short Story", url: "/stories/the-last-train.html", text: "A woman waits at an empty station for a train that stopped running years ago. A short story about waiting and love." },
+  { title: "एक छोटी सी कहानी", url: "/stories/ek-chhoti-si-kahani.html", text: "गाँव के आख़िरी छोर पर एक पुराना घर था। एक पुरानी कहानी और एक नई उम्मीद।" },
+  { title: "About Me", url: "/about.html", text: "I write short stories, novels and kahani. Contact me for collaboration." }
+];
+
+/* ============ 3. HELPERS ============ */
 const app = document.getElementById("app");
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const $ = s => app.querySelector(s);
+const dec = s => new DOMParser().parseFromString(String(s), "text/html").documentElement.textContent;
+const safeUrl = u => /^(https?:\/\/|\/|\.\/)/.test(u) ? u : "#";
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 };
 let lang = store.get("lang", "en");
 const brandHTML = () => [...NAME].map(ch => `<span>${esc(ch)}</span>`).join("");
+const getJSON = url => fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+const wikiApi = (host, params) => getJSON(`https://${host}/w/api.php?` + new URLSearchParams({ format: "json", origin: "*", ...params }));
 
-// Wikipedia snippets contain HTML: keep only the highlighted words, as safe <mark>.
+function highlight(raw, terms) {
+  if (!terms.length) return esc(raw);
+  const re = new RegExp("(" + terms.map(reEsc).join("|") + ")", "gi");
+  return raw.split(re).map((p, i) => i % 2 ? `<mark>${esc(p)}</mark>` : esc(p)).join("");
+}
 function cleanSnippet(html) {
   const marked = html.replace(/<span class="searchmatch">/g, "\u0001").replace(/<\/span>/g, "\u0002").replace(/<[^>]+>/g, "");
-  const text = new DOMParser().parseFromString(marked, "text/html").documentElement.textContent;
-  return esc(text).replace(/\u0001/g, "<mark>").replace(/\u0002/g, "</mark>");
+  return esc(dec(marked)).replace(/\u0001/g, "<mark>").replace(/\u0002/g, "</mark>");
 }
-const api = (host, params) => fetch(`https://${host}/w/api.php?` + new URLSearchParams({ format: "json", origin: "*", ...params })).then(r => { if (!r.ok) throw 0; return r.json(); });
 
-/* ============ SEARCH BOX (shared by both pages) ============ */
+/* ============ 4. DATA SOURCES ============
+   Each returns a list of { title, url, snippet (safe HTML), src, cover? } */
+async function mySite(q) {
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+  return SITE_DATA.map(d => {
+    const t = d.title.toLowerCase(), x = d.text.toLowerCase();
+    const score = terms.reduce((s, w) => s + (t.includes(w) ? 3 : 0) + (x.includes(w) ? 1 : 0), 0);
+    return { d, score };
+  }).filter(o => o.score > 0).sort((a, b) => b.score - a.score).map(({ d }) => {
+    const i = Math.max(0, d.text.toLowerCase().indexOf(terms.find(w => d.text.toLowerCase().includes(w)) || ""));
+    const part = d.text.slice(Math.max(0, i - 40), i + 160);
+    return { title: d.title, url: d.url, snippet: highlight(part, terms) + "…", src: "My Website" };
+  });
+}
+async function wikipedia(q) {
+  const r = await wikiApi(`${lang}.wikipedia.org`, { action: "query", list: "search", srsearch: q, srlimit: 8 });
+  return r.query.search.map(x => ({
+    title: x.title, src: "Wikipedia", snippet: cleanSnippet(x.snippet) + "…",
+    url: `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(x.title.replace(/ /g, "_"))}`
+  }));
+}
+async function stack(q, n = 6) {
+  const r = await getJSON("https://api.stackexchange.com/2.3/search/advanced?" + new URLSearchParams({ order: "desc", sort: "relevance", q, site: "stackoverflow", pagesize: n }));
+  return r.items.map(x => ({ title: dec(x.title), url: x.link, src: "Stack Overflow", snippet: esc(`${x.answer_count} answers · ${x.tags.join(", ")}`) }));
+}
+async function books(q, n = 6) {
+  const r = await getJSON("https://openlibrary.org/search.json?" + new URLSearchParams({ q, limit: n, fields: "key,title,author_name,first_publish_year,cover_i" }));
+  return r.docs.map(b => ({
+    title: b.title, url: "https://openlibrary.org" + b.key, src: "Open Library",
+    snippet: esc([(b.author_name || []).slice(0, 2).join(", "), b.first_publish_year].filter(Boolean).join(" · ")),
+    cover: b.cover_i ? `https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg` : ""
+  }));
+}
+async function github(q, n = 8) {
+  const r = await getJSON("https://api.github.com/search/repositories?" + new URLSearchParams({ q, per_page: n }));
+  return r.items.map(x => ({ title: x.full_name, url: x.html_url, src: "GitHub", snippet: esc(`★ ${x.stargazers_count} · ${x.description || "No description"}`) }));
+}
+async function images(q) {
+  const r = await wikiApi("commons.wikimedia.org", { action: "query", generator: "search", gsrnamespace: 6, gsrsearch: q, gsrlimit: 30, prop: "imageinfo", iiprop: "url", iiurlwidth: 300 });
+  return Object.values(r.query?.pages || {}).filter(p => p.imageinfo?.[0]?.thumburl).map(p => ({
+    name: p.title.replace(/^File:/, ""), thumb: p.imageinfo[0].thumburl, page: p.imageinfo[0].descriptionurl
+  }));
+}
+
+// Mix several result lists: one from each source in turn.
+function interleave(lists) {
+  const out = []; const max = Math.max(0, ...lists.map(l => l.length));
+  for (let i = 0; i < max; i++) lists.forEach(l => { if (l[i]) out.push(l[i]); });
+  return out;
+}
+const settled = async jobs => (await Promise.allSettled(jobs)).map(r => r.status === "fulfilled" ? r.value : []);
+
+/* ============ 5. SEARCH BOX ============ */
 function searchBox(value) {
   return `
     <div class="box">
       <form class="bar" id="f" role="search" autocomplete="off">
-        <input id="q" type="search" placeholder="Search…" aria-label="Search" value="${esc(value || "")}">
+        <input id="q" type="search" placeholder="Search everything…" aria-label="Search" value="${esc(value || "")}">
         <button class="icon" type="button" id="mic" aria-label="Search by voice">🎤</button>
         <button class="icon" type="submit" aria-label="Search">🔍</button>
       </form>
       <div class="sugg" id="sg" hidden></div>
     </div>`;
 }
-
 function wireBox() {
   const q = $("#q"), sg = $("#sg");
   let timer, idx = -1;
   const go = text => { text = text.trim(); if (text) location.hash = "#s=" + encodeURIComponent(text); };
   $("#f").onsubmit = e => { e.preventDefault(); go(q.value); };
-
   q.oninput = () => {
     clearTimeout(timer); idx = -1;
     const t = q.value.trim();
     if (!t) { sg.hidden = true; return; }
     timer = setTimeout(async () => {
       try {
-        const r = await api(`${lang}.wikipedia.org`, { action: "opensearch", search: t, limit: 6 });
+        const own = SITE_DATA.map(d => d.title).filter(s => s.toLowerCase().includes(t.toLowerCase())).slice(0, 2);
+        const r = await wikiApi(`${lang}.wikipedia.org`, { action: "opensearch", search: t, limit: 5 });
         if (q.value.trim() !== t) return;
-        sg.innerHTML = r[1].map(s => `<button type="button">${esc(s)}</button>`).join("");
-        sg.hidden = !r[1].length;
+        const all = [...new Set([...own, ...r[1]])];
+        sg.innerHTML = all.map(s => `<button type="button">${esc(s)}</button>`).join("");
+        sg.hidden = !all.length;
         sg.querySelectorAll("button").forEach(b => b.onclick = () => go(b.textContent));
       } catch { sg.hidden = true; }
     }, 200);
@@ -138,7 +204,6 @@ function wireBox() {
     } else if (e.key === "Escape") sg.hidden = true;
   };
   document.addEventListener("click", e => { if (!e.target.closest(".box")) sg.hidden = true; });
-
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) $("#mic").hidden = true;
   else $("#mic").onclick = () => {
@@ -148,7 +213,7 @@ function wireBox() {
   };
 }
 
-/* ============ HOME PAGE ============ */
+/* ============ 6. PAGES ============ */
 function home() {
   document.title = NAME;
   const recent = store.get("recent", []);
@@ -166,8 +231,9 @@ function home() {
   $("#lucky").onclick = async () => {
     const t = $("#q").value.trim(); if (!t) return;
     try {
-      const r = await api(`${lang}.wikipedia.org`, { action: "opensearch", search: t, limit: 1 });
-      if (r[3][0]) return location.href = r[3][0];
+      const [mine, wiki] = await settled([mySite(t), wikipedia(t)]);
+      const first = mine[0] || wiki[0];
+      if (first) return location.href = safeUrl(first.url);
     } catch {}
     $("#f").requestSubmit();
   };
@@ -175,66 +241,63 @@ function home() {
   $("#lg").onchange = e => { lang = e.target.value; store.set("lang", lang); };
 }
 
-/* ============ RESULTS PAGE ============ */
-async function results(query, tab = "web", offset = 0) {
+const resHTML = r => `
+  <div class="res">
+    ${r.cover ? `<img class="cover" loading="lazy" src="${esc(r.cover)}" alt="">` : ""}
+    <div>
+      <div class="url"><span class="src">${esc(r.src)}</span>${esc(r.url)}</div>
+      <h3><a href="${esc(safeUrl(r.url))}" ${r.url.startsWith("http") ? 'target="_blank" rel="noopener"' : ""}>${esc(r.title)}</a></h3>
+      <p>${r.snippet}</p>
+    </div>
+  </div>`;
+
+async function results(query, tab = "all") {
   document.title = query + " – " + NAME;
   const enc = encodeURIComponent(query);
-  const recent = [query, ...store.get("recent", []).filter(x => x !== query)].slice(0, 8);
-  store.set("recent", recent);
+  store.set("recent", [query, ...store.get("recent", []).filter(x => x !== query)].slice(0, 8));
+  const TABS = { all: "All", images: "Images", books: "Books", code: "Code" };
 
   app.innerHTML = `
     <div class="top"><h1 class="brand" id="logo" aria-label="${esc(NAME)}">${brandHTML()}</h1>${searchBox(query)}</div>
-    <div class="tabs" role="tablist">
-      <button role="tab" aria-selected="${tab === "web"}" data-t="web">All</button>
-      <button role="tab" aria-selected="${tab === "images"}" data-t="images">Images</button>
-    </div>
+    <div class="tabs" role="tablist">${Object.entries(TABS).map(([k, v]) => `<button role="tab" aria-selected="${k === tab}" data-t="${k}">${v}</button>`).join("")}</div>
     <div class="main" id="mn"><p class="msg">Searching…</p></div>`;
   wireBox();
   $("#logo").onclick = () => location.hash = "";
-  app.querySelectorAll(".tabs button").forEach(b => b.onclick = () => results(query, b.dataset.t, 0));
+  app.querySelectorAll(".tabs button").forEach(b => b.onclick = () => results(query, b.dataset.t));
   const mn = $("#mn");
-
   const other = `<div class="other">Search “${esc(query)}” on: ${Object.entries(ENGINES).map(([n, f]) => `<a href="${f(enc)}" target="_blank" rel="noopener">${n}</a>`).join("")}</div>`;
+  const empty = `<p class="msg">No results for “${esc(query)}”.</p>`;
 
   try {
-    if (tab === "web") {
-      const r = await api(`${lang}.wikipedia.org`, { action: "query", list: "search", srsearch: query, srlimit: 10, sroffset: offset });
-      const list = r.query.search, total = r.query.searchinfo.totalhits;
-      if (!list.length) { mn.innerHTML = `<p class="msg">No results for “${esc(query)}”.</p>${other}`; return; }
-      mn.innerHTML = `
-        <div class="stat">About ${total.toLocaleString()} results (${LANGS[lang]} Wikipedia)</div>
-        ${list.map(x => {
-          const url = `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(x.title.replace(/ /g, "_"))}`;
-          return `<div class="res"><div class="url">${esc(url)}</div><h3><a href="${url}" target="_blank" rel="noopener">${esc(x.title)}</a></h3><p>${cleanSnippet(x.snippet)}…</p></div>`;
-        }).join("")}
-        <div class="pager">
-          ${offset > 0 ? `<button class="btn" id="pv">← Previous</button>` : ""}
-          ${r.continue ? `<button class="btn" id="nx">Next →</button>` : ""}
-        </div>${other}`;
-      const pv = $("#pv"), nx = $("#nx");
-      if (pv) pv.onclick = () => { results(query, "web", Math.max(0, offset - 10)); window.scrollTo(0, 0); };
-      if (nx) nx.onclick = () => { results(query, "web", offset + 10); window.scrollTo(0, 0); };
+    if (tab === "all") {
+      const [mine, wiki, so, bk] = await settled([mySite(query), wikipedia(query), stack(query, 4), books(query, 4)]);
+      const list = [...mine, ...interleave([wiki, so, bk])];
+      mn.innerHTML = (list.length ? `<div class="stat">${list.length} results from My Website, Wikipedia, Stack Overflow and Open Library</div>${list.map(resHTML).join("")}` : empty) + other;
+    } else if (tab === "images") {
+      const imgs = await images(query);
+      mn.innerHTML = (imgs.length ? `<div class="grid">${imgs.map(p => `<a href="${esc(p.page)}" target="_blank" rel="noopener" title="${esc(p.name)}"><img loading="lazy" src="${esc(p.thumb)}" alt="${esc(p.name)}"></a>`).join("")}</div>` : empty) + other;
+    } else if (tab === "books") {
+      const bk = await books(query, 20);
+      mn.innerHTML = (bk.length ? bk.map(resHTML).join("") : empty) + other;
     } else {
-      const r = await api("commons.wikimedia.org", { action: "query", generator: "search", gsrnamespace: 6, gsrsearch: query, gsrlimit: 30, prop: "imageinfo", iiprop: "url", iiurlwidth: 300 });
-      const pages = Object.values(r.query?.pages || {}).filter(p => p.imageinfo?.[0]?.thumburl);
-      mn.innerHTML = pages.length
-        ? `<div class="grid">${pages.map(p => `<a href="${esc(p.imageinfo[0].descriptionurl)}" target="_blank" rel="noopener" title="${esc(p.title.replace(/^File:/, ""))}"><img loading="lazy" src="${esc(p.imageinfo[0].thumburl)}" alt="${esc(p.title.replace(/^File:/, ""))}"></a>`).join("")}</div>${other}`
-        : `<p class="msg">No images found for “${esc(query)}”.</p>${other}`;
+      const [gh, so] = await settled([github(query), stack(query, 8)]);
+      mn.innerHTML = (gh.length || so.length
+        ? `${gh.length ? `<div class="sec">Repositories</div>${gh.map(resHTML).join("")}` : ""}${so.length ? `<div class="sec">Questions</div>${so.map(resHTML).join("")}` : ""}`
+        : empty) + other;
     }
   } catch {
     mn.innerHTML = `<p class="msg">Couldn't load results. Check your internet connection and try again.</p>${other}`;
   }
 }
 
-/* ============ ROUTER ============ */
+/* ============ 7. ROUTER ============ */
 function route() {
   const m = location.hash.match(/^#s=(.*)$/);
-  if (m) results(decodeURIComponent(m[1]));
-  else home();
+  if (m) results(decodeURIComponent(m[1])); else home();
   window.scrollTo(0, 0);
 }
 window.addEventListener("hashchange", route);
 route();
 </script>
 </body>
-</html>
+  </html>
