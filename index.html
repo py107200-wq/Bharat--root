@@ -5,45 +5,282 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>भारत रूट | Swadeshi Direct Engine</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: #0b132b; color: #f8fafc; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .box { width: 100%; max-width: 620px; text-align: center; }
-    .brand { font-size: 2.4rem; font-weight: 800; margin-bottom: 6px; }
-    .saffron { color: #f97316; } .white { color: #ffffff; } .green { color: #22c55e; }
-    .sub { color: #94a3b8; font-size: 0.9rem; margin-bottom: 2rem; }
-    .search-row { display: flex; background: #1c2541; border: 2px solid #3a506b; border-radius: 40px; padding: 6px 8px 6px 20px; }
-    .search-row:focus-within { border-color: #f97316; }
-    input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: 1.05rem; }
-    button { background: #f97316; color: #fff; border: none; padding: 12px 24px; font-weight: 700; border-radius: 30px; cursor: pointer; }
-    button:hover { background: #ea580c; }
-    #msg { margin-top: 1.2rem; min-height: 24px; font-size: 0.95rem; }
-    .suc { color: #22c55e; font-weight: 600; }
-    .err { color: #f87171; }
-    .quick { margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-    .pill { background: #1c2541; border: 1px solid #3a506b; color: #cbd5e1; padding: 8px 14px; border-radius: 10px; font-size: 0.82rem; text-decoration: none; }
-    .pill:hover { border-color: #22c55e; color: #fff; }
+    :root {
+      --bg-dark: #070d1f;
+      --card-bg: rgba(20, 31, 61, 0.88);
+      --border: rgba(148, 163, 184, 0.22);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --saffron: #ff7a1a;
+      --saffron-hover: #ea580c;
+      --green: #22c55e;
+      --error: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 15% 15%, rgba(255, 122, 26, 0.14), transparent 36%),
+        radial-gradient(circle at 85% 85%, rgba(34, 197, 94, 0.12), transparent 38%),
+        var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 660px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 36px 26px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.76rem;
+      letter-spacing: 0.4px;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    .brand {
+      font-size: clamp(2.1rem, 6vw, 2.9rem);
+      font-weight: 850;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+
+    .saffron { color: var(--saffron); }
+    .white { color: #ffffff; }
+    .green { color: var(--green); }
+
+    .tricolor-bar {
+      width: 96px;
+      height: 4px;
+      margin: 0 auto 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--saffron) 33%, #ffffff 33% 66%, var(--green) 66%);
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 490px;
+      margin: 0 auto 26px;
+      line-height: 1.5;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: rgba(9, 16, 36, 0.9);
+      border: 1.5px solid rgba(148, 163, 184, 0.3);
+      border-radius: 999px;
+      padding: 6px 6px 6px 20px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--saffron);
+      box-shadow: 0 0 0 4px rgba(255, 122, 26, 0.16);
+    }
+
+    .search-box input {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 1rem;
+      padding: 8px 6px;
+    }
+
+    .search-box input::placeholder {
+      color: #64748b;
+    }
+
+    .search-box button {
+      background: var(--saffron);
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 22px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .search-box button:hover {
+      background: var(--saffron-hover);
+    }
+
+    .search-box button:active {
+      transform: scale(0.98);
+    }
+
+    #msg {
+      margin-top: 14px;
+      min-height: 24px;
+      font-size: 0.92rem;
+      line-height: 1.4;
+    }
+
+    .suc { color: var(--green); font-weight: 600; }
+    .err { color: var(--error); }
+
+    .section-label {
+      margin-top: 24px;
+      margin-bottom: 10px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .chip:hover {
+      border-color: var(--saffron);
+      background: rgba(255, 122, 26, 0.12);
+      color: #ffffff;
+    }
+
+    .portals {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 10px;
+      text-align: left;
+    }
+
+    .portal-card {
+      background: rgba(11, 19, 43, 0.72);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.2s ease, transform 0.15s ease;
+      display: block;
+    }
+
+    .portal-card:hover {
+      border-color: var(--green);
+      transform: translateY(-2px);
+    }
+
+    .portal-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .portal-url {
+      font-size: 0.75rem;
+      color: var(--muted);
+      word-break: break-all;
+    }
+
+    .footer {
+      margin-top: 24px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(148, 163, 184, 0.14);
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    @media (max-width: 480px) {
+      .container { padding: 26px 16px; border-radius: 18px; }
+      .search-box button { padding: 11px 16px; font-size: 0.88rem; }
+    }
   </style>
 </head>
 <body>
-  <div class="box">
-    <div class="brand"><span class="saffron">भारत</span> <span class="white">रूट</span><span class="green">.इन</span></div>
-    <div class="sub">100% स्वतंत्र स्वदेशी इंजन — सर्च करते ही सीधे आधिकारिक पोर्टल पर</div>
+  <main class="container">
+    <div class="badge">स्वतंत्र स्वदेशी डायरेक्ट राउटर • Zero Ads • Zero Tracking</div>
+    <h1 class="brand"><span class="saffron">भारत</span> <span class="white">रूट</span><span class="green">.इन</span></h1>
+    <div class="tricolor-bar"></div>
+    <p class="sub">भटकाव या अनावश्यक विज्ञापनों के बिना सीधे आधिकारिक भारतीय पोर्टल पर पहुँचें</p>
 
-    <div class="search-row">
-      <input type="text" id="q" placeholder="लिखें: UPSC, Scholarship, PM Kisan, MGKVP, Samarth..." autofocus>
-      <button onclick="go()">खोजें</button>
+    <div class="search-box">
+      <input type="text" id="q" placeholder="लिखें: UPSC, Scholarship, PM Kisan, MGKVP, Samarth..." autocomplete="off" autofocus>
+      <button type="button" onclick="go()">खोजें</button>
     </div>
 
     <div id="msg"></div>
 
-    <div class="quick">
-      <a class="pill" href="https://upsc.gov.in" target="_blank" rel="noopener noreferrer">1. UPSC</a>
-      <a class="pill" href="https://scholarships.gov.in" target="_blank" rel="noopener noreferrer">2. Scholarship (NSP)</a>
-      <a class="pill" href="https://pmkisan.gov.in" target="_blank" rel="noopener noreferrer">3. PM Kisan</a>
-      <a class="pill" href="https://mgkvp.ac.in" target="_blank" rel="noopener noreferrer">4. MGKVP Varanasi</a>
-      <a class="pill" href="https://samarth.edu.in" target="_blank" rel="noopener noreferrer">5. Samarth eGov</a>
+    <div class="section-label">त्वरित कीवर्ड</div>
+    <div class="chips">
+      <button type="button" class="chip" onclick="quickSearch('upsc')">UPSC / CAPF</button>
+      <button type="button" class="chip" onclick="quickSearch('scholarship')">छात्रवृत्ति (NSP)</button>
+      <button type="button" class="chip" onclick="quickSearch('kisan')">PM Kisan</button>
+      <button type="button" class="chip" onclick="quickSearch('mgkvp')">MGKVP</button>
+      <button type="button" class="chip" onclick="quickSearch('samarth')">Samarth</button>
     </div>
-  </div>
+
+    <div class="section-label">सत्यापित आधिकारिक पोर्टल</div>
+    <div class="portals">
+      <a class="portal-card" href="https://upsc.gov.in" target="_blank" rel="noopener noreferrer">
+        <div class="portal-title">UPSC Portal</div>
+        <div class="portal-url">upsc.gov.in</div>
+      </a>
+      <a class="portal-card" href="https://scholarships.gov.in" target="_blank" rel="noopener noreferrer">
+        <div class="portal-title">National Scholarship</div>
+        <div class="portal-url">scholarships.gov.in</div>
+      </a>
+      <a class="portal-card" href="https://pmkisan.gov.in" target="_blank" rel="noopener noreferrer">
+        <div class="portal-title">PM Kisan</div>
+        <div class="portal-url">pmkisan.gov.in</div>
+      </a>
+      <a class="portal-card" href="https://mgkvp.ac.in" target="_blank" rel="noopener noreferrer">
+        <div class="portal-title">MGKVP Varanasi</div>
+        <div class="portal-url">mgkvp.ac.in</div>
+      </a>
+      <a class="portal-card" href="https://samarth.edu.in" target="_blank" rel="noopener noreferrer">
+        <div class="portal-title">Samarth eGov</div>
+        <div class="portal-url">samarth.edu.in</div>
+      </a>
+    </div>
+
+    <div class="footer">भारत रूट • सीधा और भरोसेमंद भारतीय प्रवेश द्वार</div>
+  </main>
 
   <script>
     const DIRECT_PORTALS = [
@@ -103,13 +340,20 @@
     const inp = document.getElementById("q");
     const msg = document.getElementById("msg");
 
-    inp.addEventListener("keypress", (e) => { if (e.key === "Enter") go(); });
+    inp.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") go();
+    });
+
+    function quickSearch(term) {
+      inp.value = term;
+      go();
+    }
 
     function go() {
       const val = inp.value.trim();
       if (!val) {
         msg.className = "err";
-        msg.innerText = "कृपया कोई कीवर्ड लिखें।";
+        msg.innerText = "कृपया कोई कीवर्ड लिखें या नीचे दिए गए विकल्प चुनें।";
         return;
       }
 
@@ -117,7 +361,9 @@
       if (data && data.url) {
         msg.className = "suc";
         msg.innerText = "✓ '" + data.name + "' मिला! सीधे ले जाया जा रहा है...";
-        setTimeout(() => { window.location.assign(data.url); }, 500);
+        setTimeout(() => {
+          window.location.assign(data.url);
+        }, 500);
       } else {
         msg.className = "err";
         msg.innerText = "डेटाबेस में नहीं मिला। इन 5 में से खोजें: UPSC, Scholarship, Kisan, MGKVP, Samarth";
