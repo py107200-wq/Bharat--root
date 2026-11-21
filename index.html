@@ -1,374 +1,240 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>भारत रूट | Swadeshi Direct Engine</title>
-  <style>
-    :root {
-      --bg-dark: #070d1f;
-      --card-bg: rgba(20, 31, 61, 0.88);
-      --border: rgba(148, 163, 184, 0.22);
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --saffron: #ff7a1a;
-      --saffron-hover: #ea580c;
-      --green: #22c55e;
-      --error: #f87171;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Searchly</title>
+<style>
+:root{--bg:#fff;--surface:#fff;--text:#202124;--muted:#5f6368;--link:#1a0dab;--accent:#1a73e8;--line:#dfe1e5;--hover:#f1f3f4}
+@media (prefers-color-scheme:dark){:root{--bg:#18191c;--surface:#202225;--text:#e8eaed;--muted:#9aa0a6;--link:#8ab4f8;--accent:#8ab4f8;--line:#3c4043;--hover:#2a2c30}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--link)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+/* Home */
+.home{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 80px}
+.brand{font-size:clamp(2.8rem,12vw,4.6rem);font-weight:700;letter-spacing:-2px;margin:0 0 24px}
+.brand span:nth-child(1){color:#4285f4}.brand span:nth-child(2){color:#ea4335}.brand span:nth-child(3){color:#fbbc05}
+.brand span:nth-child(4){color:#4285f4}.brand span:nth-child(5){color:#34a853}.brand span:nth-child(6){color:#ea4335}
+.brand span:nth-child(7){color:#4285f4}.brand span:nth-child(8){color:#34a853}
+.box{position:relative;width:100%;max-width:600px}
+.bar{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:4px 8px 4px 16px;min-height:48px}
+.bar:hover,.bar:focus-within{box-shadow:0 1px 6px rgba(32,33,36,.28)}
+.bar input{flex:1;border:0;outline:0;background:transparent;min-width:0;padding:8px 4px}
+.icon{border:0;background:none;cursor:pointer;width:38px;height:38px;border-radius:50%;font-size:1.15rem;color:var(--muted)}
+.icon:hover{background:var(--hover)}
+.sugg{position:absolute;left:0;right:0;top:54px;z-index:5;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 12px rgba(32,33,36,.2);overflow:hidden}
+.sugg button{display:block;width:100%;text-align:left;border:0;background:none;padding:10px 20px;cursor:pointer}
+.sugg button:hover,.sugg button.on{background:var(--hover)}
+.actions{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap;justify-content:center}
+.btn{background:var(--hover);border:1px solid var(--hover);border-radius:6px;padding:9px 16px;cursor:pointer}
+.btn:hover{border-color:var(--line)}
+.recent{margin-top:22px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:600px}
+.chip{border:1px solid var(--line);background:none;border-radius:99px;padding:4px 14px;cursor:pointer;color:var(--muted);font-size:.9rem}
+.chip:hover{background:var(--hover)}
+.langrow{margin-top:22px;color:var(--muted);font-size:.9rem}
+select{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
 
-    body {
-      background:
-        radial-gradient(circle at 15% 15%, rgba(255, 122, 26, 0.14), transparent 36%),
-        radial-gradient(circle at 85% 85%, rgba(34, 197, 94, 0.12), transparent 38%),
-        var(--bg-dark);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 660px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 36px 26px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-      backdrop-filter: blur(10px);
-      text-align: center;
-    }
-
-    .badge {
-      display: inline-block;
-      font-size: 0.76rem;
-      letter-spacing: 0.4px;
-      color: #cbd5e1;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border);
-      padding: 5px 12px;
-      border-radius: 999px;
-      margin-bottom: 14px;
-    }
-
-    .brand {
-      font-size: clamp(2.1rem, 6vw, 2.9rem);
-      font-weight: 850;
-      line-height: 1.15;
-      margin-bottom: 8px;
-    }
-
-    .saffron { color: var(--saffron); }
-    .white { color: #ffffff; }
-    .green { color: var(--green); }
-
-    .tricolor-bar {
-      width: 96px;
-      height: 4px;
-      margin: 0 auto 14px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, var(--saffron) 33%, #ffffff 33% 66%, var(--green) 66%);
-    }
-
-    .sub {
-      color: var(--muted);
-      font-size: 0.95rem;
-      max-width: 490px;
-      margin: 0 auto 26px;
-      line-height: 1.5;
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      background: rgba(9, 16, 36, 0.9);
-      border: 1.5px solid rgba(148, 163, 184, 0.3);
-      border-radius: 999px;
-      padding: 6px 6px 6px 20px;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .search-box:focus-within {
-      border-color: var(--saffron);
-      box-shadow: 0 0 0 4px rgba(255, 122, 26, 0.16);
-    }
-
-    .search-box input {
-      flex: 1;
-      min-width: 0;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-size: 1rem;
-      padding: 8px 6px;
-    }
-
-    .search-box input::placeholder {
-      color: #64748b;
-    }
-
-    .search-box button {
-      background: var(--saffron);
-      color: #ffffff;
-      border: none;
-      border-radius: 999px;
-      padding: 12px 22px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.1s ease;
-      white-space: nowrap;
-    }
-
-    .search-box button:hover {
-      background: var(--saffron-hover);
-    }
-
-    .search-box button:active {
-      transform: scale(0.98);
-    }
-
-    #msg {
-      margin-top: 14px;
-      min-height: 24px;
-      font-size: 0.92rem;
-      line-height: 1.4;
-    }
-
-    .suc { color: var(--green); font-weight: 600; }
-    .err { color: var(--error); }
-
-    .section-label {
-      margin-top: 24px;
-      margin-bottom: 10px;
-      font-size: 0.8rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-    }
-
-    .chip {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      color: #e2e8f0;
-      padding: 7px 13px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      cursor: pointer;
-      transition: all 0.18s ease;
-    }
-
-    .chip:hover {
-      border-color: var(--saffron);
-      background: rgba(255, 122, 26, 0.12);
-      color: #ffffff;
-    }
-
-    .portals {
-      margin-top: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
-      gap: 10px;
-      text-align: left;
-    }
-
-    .portal-card {
-      background: rgba(11, 19, 43, 0.72);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 14px;
-      text-decoration: none;
-      color: var(--text);
-      transition: border-color 0.2s ease, transform 0.15s ease;
-      display: block;
-    }
-
-    .portal-card:hover {
-      border-color: var(--green);
-      transform: translateY(-2px);
-    }
-
-    .portal-title {
-      font-size: 0.88rem;
-      font-weight: 700;
-      margin-bottom: 3px;
-    }
-
-    .portal-url {
-      font-size: 0.75rem;
-      color: var(--muted);
-      word-break: break-all;
-    }
-
-    .footer {
-      margin-top: 24px;
-      padding-top: 14px;
-      border-top: 1px solid rgba(148, 163, 184, 0.14);
-      font-size: 0.78rem;
-      color: #64748b;
-    }
-
-    @media (max-width: 480px) {
-      .container { padding: 26px 16px; border-radius: 18px; }
-      .search-box button { padding: 11px 16px; font-size: 0.88rem; }
-    }
-  </style>
+/* Results */
+.top{display:flex;align-items:center;gap:16px;padding:14px 20px 0;flex-wrap:wrap}
+.top .brand{font-size:1.7rem;margin:0;letter-spacing:-1px;cursor:pointer}
+.top .box{flex:1;min-width:240px;max-width:640px}
+.tabs{display:flex;gap:4px;padding:0 20px;border-bottom:1px solid var(--line);margin-top:10px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:10px 14px;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+.tabs button[aria-selected=true]{color:var(--accent);border-bottom-color:var(--accent)}
+.main{max-width:700px;padding:16px 20px 60px;margin-left:0}
+@media (min-width:900px){.main{margin-left:150px}}
+.stat{color:var(--muted);font-size:.85rem;margin-bottom:14px}
+.res{margin:0 0 26px}
+.res .url{color:var(--muted);font-size:.85rem;word-break:break-all}
+.res h3{margin:2px 0 4px;font-size:1.2rem;font-weight:400}
+.res h3 a{text-decoration:none}.res h3 a:hover{text-decoration:underline}
+.res p{margin:0;color:var(--muted)}
+mark{background:none;color:var(--text);font-weight:700}
+.other{margin:26px 0;padding:14px 16px;border:1px solid var(--line);border-radius:12px}
+.other a{margin-right:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.grid a{display:block;background:var(--hover);border-radius:8px;overflow:hidden;aspect-ratio:1;position:relative}
+.grid img{width:100%;height:100%;object-fit:cover;display:block}
+.pager{display:flex;gap:10px;margin-top:10px}
+.msg{color:var(--muted);padding:30px 0}
+</style>
 </head>
 <body>
-  <main class="container">
-    <div class="badge">स्वतंत्र स्वदेशी डायरेक्ट राउटर • Zero Ads • Zero Tracking</div>
-    <h1 class="brand"><span class="saffron">भारत</span> <span class="white">रूट</span><span class="green">.इन</span></h1>
-    <div class="tricolor-bar"></div>
-    <p class="sub">भटकाव या अनावश्यक विज्ञापनों के बिना सीधे आधिकारिक भारतीय पोर्टल पर पहुँचें</p>
+<div id="app"></div>
 
-    <div class="search-box">
-      <input type="text" id="q" placeholder="लिखें: UPSC, Scholarship, PM Kisan, MGKVP, Samarth..." autocomplete="off" autofocus>
-      <button type="button" onclick="go()">खोजें</button>
-    </div>
+<script>
+/* ============ SETTINGS (edit if you like) ============ */
+const NAME = "Searchly";
+const LANGS = { en: "English", hi: "हिन्दी" };
+const ENGINES = {
+  Google:     q => "https://www.google.com/search?q=" + q,
+  Bing:       q => "https://www.bing.com/search?q=" + q,
+  DuckDuckGo: q => "https://duckduckgo.com/?q=" + q
+};
 
-    <div id="msg"></div>
+/* ============ HELPERS ============ */
+const app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const $ = s => app.querySelector(s);
+const store = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+};
+let lang = store.get("lang", "en");
+const brandHTML = () => [...NAME].map(ch => `<span>${esc(ch)}</span>`).join("");
 
-    <div class="section-label">त्वरित कीवर्ड</div>
-    <div class="chips">
-      <button type="button" class="chip" onclick="quickSearch('upsc')">UPSC / CAPF</button>
-      <button type="button" class="chip" onclick="quickSearch('scholarship')">छात्रवृत्ति (NSP)</button>
-      <button type="button" class="chip" onclick="quickSearch('kisan')">PM Kisan</button>
-      <button type="button" class="chip" onclick="quickSearch('mgkvp')">MGKVP</button>
-      <button type="button" class="chip" onclick="quickSearch('samarth')">Samarth</button>
-    </div>
+// Wikipedia snippets contain HTML: keep only the highlighted words, as safe <mark>.
+function cleanSnippet(html) {
+  const marked = html.replace(/<span class="searchmatch">/g, "\u0001").replace(/<\/span>/g, "\u0002").replace(/<[^>]+>/g, "");
+  const text = new DOMParser().parseFromString(marked, "text/html").documentElement.textContent;
+  return esc(text).replace(/\u0001/g, "<mark>").replace(/\u0002/g, "</mark>");
+}
+const api = (host, params) => fetch(`https://${host}/w/api.php?` + new URLSearchParams({ format: "json", origin: "*", ...params })).then(r => { if (!r.ok) throw 0; return r.json(); });
 
-    <div class="section-label">सत्यापित आधिकारिक पोर्टल</div>
-    <div class="portals">
-      <a class="portal-card" href="https://upsc.gov.in" target="_blank" rel="noopener noreferrer">
-        <div class="portal-title">UPSC Portal</div>
-        <div class="portal-url">upsc.gov.in</div>
-      </a>
-      <a class="portal-card" href="https://scholarships.gov.in" target="_blank" rel="noopener noreferrer">
-        <div class="portal-title">National Scholarship</div>
-        <div class="portal-url">scholarships.gov.in</div>
-      </a>
-      <a class="portal-card" href="https://pmkisan.gov.in" target="_blank" rel="noopener noreferrer">
-        <div class="portal-title">PM Kisan</div>
-        <div class="portal-url">pmkisan.gov.in</div>
-      </a>
-      <a class="portal-card" href="https://mgkvp.ac.in" target="_blank" rel="noopener noreferrer">
-        <div class="portal-title">MGKVP Varanasi</div>
-        <div class="portal-url">mgkvp.ac.in</div>
-      </a>
-      <a class="portal-card" href="https://samarth.edu.in" target="_blank" rel="noopener noreferrer">
-        <div class="portal-title">Samarth eGov</div>
-        <div class="portal-url">samarth.edu.in</div>
-      </a>
-    </div>
+/* ============ SEARCH BOX (shared by both pages) ============ */
+function searchBox(value) {
+  return `
+    <div class="box">
+      <form class="bar" id="f" role="search" autocomplete="off">
+        <input id="q" type="search" placeholder="Search…" aria-label="Search" value="${esc(value || "")}">
+        <button class="icon" type="button" id="mic" aria-label="Search by voice">🎤</button>
+        <button class="icon" type="submit" aria-label="Search">🔍</button>
+      </form>
+      <div class="sugg" id="sg" hidden></div>
+    </div>`;
+}
 
-    <div class="footer">भारत रूट • सीधा और भरोसेमंद भारतीय प्रवेश द्वार</div>
-  </main>
+function wireBox() {
+  const q = $("#q"), sg = $("#sg");
+  let timer, idx = -1;
+  const go = text => { text = text.trim(); if (text) location.hash = "#s=" + encodeURIComponent(text); };
+  $("#f").onsubmit = e => { e.preventDefault(); go(q.value); };
 
-  <script>
-    const DIRECT_PORTALS = [
-      {
-        name: "UPSC Official Portal",
-        url: "https://upsc.gov.in",
-        keys: ["upsc", "ias", "ips", "capf", "cds", "nda", "assistant commandant"]
-      },
-      {
-        name: "National Scholarship Portal",
-        url: "https://scholarships.gov.in",
-        keys: ["scholarship", "nsp", "chatravriti", "छात्रवृत्ति", "welfare"]
-      },
-      {
-        name: "PM Kisan Samman Nidhi",
-        url: "https://pmkisan.gov.in",
-        keys: ["pm kisan", "kisan", "farmer", "किसान", "सम्मान निधि", "6000"]
-      },
-      {
-        name: "MGKVP Varanasi",
-        url: "https://mgkvp.ac.in",
-        keys: ["mgkvp", "kashi vidyapith", "विद्यापीठ", "bca", "result", "exam form"]
-      },
-      {
-        name: "Samarth eGov Student Portal",
-        url: "https://samarth.edu.in",
-        keys: ["samarth", "student", "समर्थ", "enrollment", "student portal"]
-      }
-    ];
-
-    const routeCache = new Map();
-
-    function isSafeUrl(raw) {
+  q.oninput = () => {
+    clearTimeout(timer); idx = -1;
+    const t = q.value.trim();
+    if (!t) { sg.hidden = true; return; }
+    timer = setTimeout(async () => {
       try {
-        const u = new URL(raw);
-        return u.protocol === "https:" || u.protocol === "http:";
-      } catch {
-        return false;
-      }
+        const r = await api(`${lang}.wikipedia.org`, { action: "opensearch", search: t, limit: 6 });
+        if (q.value.trim() !== t) return;
+        sg.innerHTML = r[1].map(s => `<button type="button">${esc(s)}</button>`).join("");
+        sg.hidden = !r[1].length;
+        sg.querySelectorAll("button").forEach(b => b.onclick = () => go(b.textContent));
+      } catch { sg.hidden = true; }
+    }, 200);
+  };
+  q.onkeydown = e => {
+    const items = [...sg.querySelectorAll("button")];
+    if (sg.hidden || !items.length) return;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      idx = (idx + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+      items.forEach((b, i) => b.classList.toggle("on", i === idx));
+      q.value = items[idx].textContent;
+    } else if (e.key === "Escape") sg.hidden = true;
+  };
+  document.addEventListener("click", e => { if (!e.target.closest(".box")) sg.hidden = true; });
+
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) $("#mic").hidden = true;
+  else $("#mic").onclick = () => {
+    const r = new SR(); r.lang = lang === "hi" ? "hi-IN" : "en-US";
+    r.onresult = e => go(e.results[0][0].transcript);
+    try { r.start(); } catch {}
+  };
+}
+
+/* ============ HOME PAGE ============ */
+function home() {
+  document.title = NAME;
+  const recent = store.get("recent", []);
+  app.innerHTML = `
+    <div class="home">
+      <h1 class="brand" aria-label="${esc(NAME)}">${brandHTML()}</h1>
+      ${searchBox("")}
+      <div class="actions"><button class="btn" id="go">Search</button><button class="btn" id="lucky">I'm feeling lucky</button></div>
+      ${recent.length ? `<div class="recent">${recent.map(r => `<button class="chip">${esc(r)}</button>`).join("")}</div>` : ""}
+      <div class="langrow">Language: <select id="lg" aria-label="Language">${Object.entries(LANGS).map(([k, v]) => `<option value="${k}" ${k === lang ? "selected" : ""}>${v}</option>`).join("")}</select></div>
+    </div>`;
+  wireBox();
+  $("#q").focus();
+  $("#go").onclick = () => $("#f").requestSubmit();
+  $("#lucky").onclick = async () => {
+    const t = $("#q").value.trim(); if (!t) return;
+    try {
+      const r = await api(`${lang}.wikipedia.org`, { action: "opensearch", search: t, limit: 1 });
+      if (r[3][0]) return location.href = r[3][0];
+    } catch {}
+    $("#f").requestSubmit();
+  };
+  app.querySelectorAll(".chip").forEach(c => c.onclick = () => location.hash = "#s=" + encodeURIComponent(c.textContent));
+  $("#lg").onchange = e => { lang = e.target.value; store.set("lang", lang); };
+}
+
+/* ============ RESULTS PAGE ============ */
+async function results(query, tab = "web", offset = 0) {
+  document.title = query + " – " + NAME;
+  const enc = encodeURIComponent(query);
+  const recent = [query, ...store.get("recent", []).filter(x => x !== query)].slice(0, 8);
+  store.set("recent", recent);
+
+  app.innerHTML = `
+    <div class="top"><h1 class="brand" id="logo" aria-label="${esc(NAME)}">${brandHTML()}</h1>${searchBox(query)}</div>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="${tab === "web"}" data-t="web">All</button>
+      <button role="tab" aria-selected="${tab === "images"}" data-t="images">Images</button>
+    </div>
+    <div class="main" id="mn"><p class="msg">Searching…</p></div>`;
+  wireBox();
+  $("#logo").onclick = () => location.hash = "";
+  app.querySelectorAll(".tabs button").forEach(b => b.onclick = () => results(query, b.dataset.t, 0));
+  const mn = $("#mn");
+
+  const other = `<div class="other">Search “${esc(query)}” on: ${Object.entries(ENGINES).map(([n, f]) => `<a href="${f(enc)}" target="_blank" rel="noopener">${n}</a>`).join("")}</div>`;
+
+  try {
+    if (tab === "web") {
+      const r = await api(`${lang}.wikipedia.org`, { action: "query", list: "search", srsearch: query, srlimit: 10, sroffset: offset });
+      const list = r.query.search, total = r.query.searchinfo.totalhits;
+      if (!list.length) { mn.innerHTML = `<p class="msg">No results for “${esc(query)}”.</p>${other}`; return; }
+      mn.innerHTML = `
+        <div class="stat">About ${total.toLocaleString()} results (${LANGS[lang]} Wikipedia)</div>
+        ${list.map(x => {
+          const url = `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(x.title.replace(/ /g, "_"))}`;
+          return `<div class="res"><div class="url">${esc(url)}</div><h3><a href="${url}" target="_blank" rel="noopener">${esc(x.title)}</a></h3><p>${cleanSnippet(x.snippet)}…</p></div>`;
+        }).join("")}
+        <div class="pager">
+          ${offset > 0 ? `<button class="btn" id="pv">← Previous</button>` : ""}
+          ${r.continue ? `<button class="btn" id="nx">Next →</button>` : ""}
+        </div>${other}`;
+      const pv = $("#pv"), nx = $("#nx");
+      if (pv) pv.onclick = () => { results(query, "web", Math.max(0, offset - 10)); window.scrollTo(0, 0); };
+      if (nx) nx.onclick = () => { results(query, "web", offset + 10); window.scrollTo(0, 0); };
+    } else {
+      const r = await api("commons.wikimedia.org", { action: "query", generator: "search", gsrnamespace: 6, gsrsearch: query, gsrlimit: 30, prop: "imageinfo", iiprop: "url", iiurlwidth: 300 });
+      const pages = Object.values(r.query?.pages || {}).filter(p => p.imageinfo?.[0]?.thumburl);
+      mn.innerHTML = pages.length
+        ? `<div class="grid">${pages.map(p => `<a href="${esc(p.imageinfo[0].descriptionurl)}" target="_blank" rel="noopener" title="${esc(p.title.replace(/^File:/, ""))}"><img loading="lazy" src="${esc(p.imageinfo[0].thumburl)}" alt="${esc(p.title.replace(/^File:/, ""))}"></a>`).join("")}</div>${other}`
+        : `<p class="msg">No images found for “${esc(query)}”.</p>${other}`;
     }
+  } catch {
+    mn.innerHTML = `<p class="msg">Couldn't load results. Check your internet connection and try again.</p>${other}`;
+  }
+}
 
-    function resolveRoute(rawQuery) {
-      const q = String(rawQuery || "").slice(0, 80).trim().toLowerCase();
-      if (!q) return null;
-      if (routeCache.has(q)) return routeCache.get(q);
-
-      const match = DIRECT_PORTALS.find(
-        (p) => p.name.toLowerCase().includes(q) || p.keys.some((k) => q.includes(k) || k.toLowerCase().includes(q))
-      );
-
-      const result = match && isSafeUrl(match.url) ? { name: match.name, url: match.url } : null;
-      if (routeCache.size >= 500) routeCache.clear();
-      routeCache.set(q, result);
-      return result;
-    }
-
-    const inp = document.getElementById("q");
-    const msg = document.getElementById("msg");
-
-    inp.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") go();
-    });
-
-    function quickSearch(term) {
-      inp.value = term;
-      go();
-    }
-
-    function go() {
-      const val = inp.value.trim();
-      if (!val) {
-        msg.className = "err";
-        msg.innerText = "कृपया कोई कीवर्ड लिखें या नीचे दिए गए विकल्प चुनें।";
-        return;
-      }
-
-      const data = resolveRoute(val);
-      if (data && data.url) {
-        msg.className = "suc";
-        msg.innerText = "✓ '" + data.name + "' मिला! सीधे ले जाया जा रहा है...";
-        setTimeout(() => {
-          window.location.assign(data.url);
-        }, 500);
-      } else {
-        msg.className = "err";
-        msg.innerText = "डेटाबेस में नहीं मिला। इन 5 में से खोजें: UPSC, Scholarship, Kisan, MGKVP, Samarth";
-      }
-    }
-  </script>
+/* ============ ROUTER ============ */
+function route() {
+  const m = location.hash.match(/^#s=(.*)$/);
+  if (m) results(decodeURIComponent(m[1]));
+  else home();
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", route);
+route();
+</script>
 </body>
-  </html>
+</html>
